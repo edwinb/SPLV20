@@ -37,7 +37,7 @@ checkExp env term got (Just exp)
                       pure (term, exp)
              cs => do cty <- getTerm exp
                       ctm <- newConstant env term cty cs
-                      pure (cty, got)
+                      pure (ctm, got)
 
 -- Check a raw term, given (possibly) the current environment and its expected 
 -- type, if known.

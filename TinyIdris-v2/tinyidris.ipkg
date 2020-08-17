@@ -1,0 +1,67 @@
+package tinyidris
+
+modules = -- Core TT representations
+
+          Core.CaseBuilder, -- compiling case trees (we won't look at this)
+          Core.CaseTree,    -- case tree structure
+          Core.Context,     -- context of names and definitions
+          Core.Core,        -- the "Core" monad and support
+          Core.Env,         -- local environments
+          Core.TT,          -- well-scoped terms
+          Core.Unify,       -- unification
+          Core.UnifyState,  -- unification state and support
+          Core.Value,       -- head normal forms
+
+          -- The input language, TTImp (TT with implicit terms)
+
+          TTImp.Parser,     -- parser for TTImp (we won't look at this)
+          TTImp.TTImp,      -- high level unchecked terms, for elaboration
+
+          -- Type checking/elaboration
+
+          TTImp.Elab.Term,
+
+          TTImp.ProcessData,
+          TTImp.ProcessDecl,
+          TTImp.ProcessDef,
+          TTImp.ProcessType,
+
+          Data.Bool.Extra,
+          Data.LengthMatch,
+
+          -- Modules below are text processing and parsing related, and mostly
+          -- copied directly from full Idris 2. For the purposes of this course,
+          -- you can ignore them (but you may be interested anyway :))
+
+          Parser.Package,
+          Parser.Source,
+          Parser.Support,
+          Parser.Unlit,
+
+          Parser.Lexer.Common,
+          Parser.Lexer.Package,
+          Parser.Lexer.Source,
+          Parser.Rule.Common,
+          Parser.Rule.Package,
+          Parser.Rule.Source,
+
+          Text.Lexer,
+          Text.Literate,
+          Text.Parser,
+          Text.Quantity,
+          Text.Token,
+
+          Text.Lexer.Core,
+          Text.Parser.Core,
+
+          Utils.Either,
+          Utils.Hex,
+          Utils.Octal,
+          Utils.String
+
+options = "-p contrib"
+
+main = Idris.Main
+sourcedir = "src"
+
+executable = tinyidris

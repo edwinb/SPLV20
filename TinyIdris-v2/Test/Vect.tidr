@@ -1,0 +1,22 @@
+data Nat : Type where
+     Z : Nat
+     S : Nat -> Nat
+
+plus : Nat -> Nat -> Nat
+pat y : Nat =>
+   plus Z y = y
+pat k : Nat, y : Nat =>
+   plus (S k) y = S (plus k y)
+
+data Vect : Nat -> Type -> Type where
+     Nil : (a : Type) -> Vect Z a
+     Cons : (a : Type) -> (k : Nat) ->
+            a -> Vect k a -> Vect (S k) a
+
+append : (a : _) -> (n : _) -> (m : _) ->
+         Vect n a -> Vect m a -> Vect (plus n m) a
+pat a : Type, k : Nat, ys : Vect k a =>
+    append a Z k (Nil a) ys = ys
+pat a : Type, n : Nat, x : a, xs : Vect n a, k : Nat, ys : Vect k a =>
+    append a (S n) k (Cons a k x xs) ys
+        = Cons _ _ x (append _ _ _ xs ys)

@@ -20,3 +20,15 @@ pat a : Type, k : Nat, ys : Vect k a =>
 pat a : Type, n : Nat, x : a, xs : Vect n a, k : Nat, ys : Vect k a =>
     append a (S n) k (Cons a k x xs) ys
         = Cons _ _ x (append _ _ _ xs ys)
+
+data Test : Type where
+     A : Test
+     B : Test
+     C : Test
+     D : Test
+
+vect1 : Vect (S (S Z)) Test
+vect1 = Cons _ _ A (Cons _ _ B (Nil _))
+
+vect2 : Vect (S (S Z)) Test
+vect2 = Cons _ _ C (Cons _ _ D (Nil _))

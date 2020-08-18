@@ -18,7 +18,7 @@ append : (a : _) -> (n : _) -> (m : _) ->
 pat a : Type, k : Nat, ys : Vect k a =>
     append a Z k (Nil a) ys = ys
 pat a : Type, n : Nat, x : a, xs : Vect n a, k : Nat, ys : Vect k a =>
-    append a (S n) k (Cons a k x xs) ys
+    append a (S n) k (Cons a n x xs) ys
         = Cons _ _ x (append _ _ _ xs ys)
 
 data Test : Type where

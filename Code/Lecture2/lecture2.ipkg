@@ -1,0 +1,3 @@
+package lecture1
+
+opts = "-p contrib"

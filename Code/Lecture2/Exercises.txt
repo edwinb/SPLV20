@@ -1,0 +1,20 @@
+Today's exercises:
+
+* Complete the missing definitions in Core.TT
+
+These might take you a while (they took me a while at first...) and there
+is no need to complete them before the rest of the lectures. I stuggest
+you at least try to make some progress on one of them to get a feel for how
+Term manipulation works, and look at the TinyIdris definitions if you get
+stuck.
+
+Some hints:
+
+- You will need to manipulate IsVar in various ways, so don't be afraid of
+  adding auxiliary definitions
+- Sometimes when manipulating variables you will need to look at the names in
+  scope to work out where to insert/drop a variable, so you may need 'vars'
+  to be available at run time (it's not as expensive as you might expect)
+- (In my opinion) subst is probably easiest, then contract; embed; weaken in
+  increasing order of difficulty
+- The answers are available in Core.TT in TinyIdris!

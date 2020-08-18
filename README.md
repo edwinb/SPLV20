@@ -6,7 +6,7 @@ Verification summer school course on "The Implementation of Idris 2"
 
 This includes:
 
-* `Lectures` --- containing the (PDF) slides
+* `Slides` --- containing the (PDF) slides from the lectures
 * `Code` --- containing the code used in the lectures, and exercises
 * `TinyIdris-v1` --- an initial implementation of TinyIdris
 * `TinyIdris-v2` --- an expanded implementation of TinyIdris with unification

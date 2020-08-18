@@ -15,6 +15,6 @@ Some hints:
 - Sometimes when manipulating variables you will need to look at the names in
   scope to work out where to insert/drop a variable, so you may need 'vars'
   to be available at run time (it's not as expensive as you might expect)
-- (In my opinion) subst is probably easiest, then contract; embed; weaken in
+- (In my opinion) contract is probably easiest, then subst; embed; weaken in
   increasing order of difficulty
 - The answers are available in Core.TT in TinyIdris!

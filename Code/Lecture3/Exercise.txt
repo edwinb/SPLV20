@@ -1,0 +1,7 @@
+Today's exercise:
+
+There are some holes in this version of TTImp.Elab.Term, in the rules for
+Pi and Lambda. Fill them in by following the typing rules.
+
+You can find some of the answers in TinyIdris-v1. But there is also a hole 
+for a Lambda with an unknown expected type. How can you handle this?

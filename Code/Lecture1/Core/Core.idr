@@ -57,6 +57,10 @@ map : (a -> b) -> Core a -> Core b
 map f (MkCore a) = MkCore (map (map f) a)
 
 export %inline
+ignore : Core a -> Core ()
+ignore = map (\ _ => ())
+
+export %inline
 (<$>) : (a -> b) -> Core a -> Core b
 (<$>) f (MkCore a) = MkCore (map (map f) a)
 
@@ -68,6 +72,11 @@ export %inline
                    (\x => case x of
                                Left err => pure (Left err)
                                Right val => runCore (f val)))
+
+-- Monad (specialised)
+export %inline
+(>>) : Core () -> Core b -> Core b
+ma >> mb = ma >>= \ () => mb
 
 -- Applicative (specialised)
 export %inline
@@ -111,7 +120,7 @@ traverse f xs = traverse' f xs []
 
 export
 traverseList1 : (a -> Core b) -> List1 a -> Core (List1 b)
-traverseList1 f (x :: xs) = [| f x :: traverse f xs |]
+traverseList1 f (x ::: xs) = [| f x ::: traverse f xs |]
 
 export
 traverseVect : (a -> Core b) -> Vect n a -> Core (Vect n b)
@@ -124,15 +133,15 @@ traverseOpt f Nothing = pure Nothing
 traverseOpt f (Just x) = map Just (f x)
 
 export
-traverse_ : (a -> Core b) -> List a -> Core ()
+traverse_ : (a -> Core ()) -> List a -> Core ()
 traverse_ f [] = pure ()
 traverse_ f (x :: xs)
     = do f x
          traverse_ f xs
 
 export
-traverseList1_ : (a -> Core b) -> List1 a -> Core ()
-traverseList1_ f (x :: xs) = do
+traverseList1_ : (a -> Core ()) -> List1 a -> Core ()
+traverseList1_ f (x ::: xs) = do
   f x
   traverse_ f xs
 

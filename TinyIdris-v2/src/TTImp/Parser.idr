@@ -33,6 +33,8 @@ collectDefs : List ImpDecl -> List ImpDecl
 
 %hide Prelude.(>>=)
 %hide Core.Core.(>>=)
+%hide Prelude.(>>)
+%hide Core.Core.(>>)
 %hide Prelude.pure
 %hide Core.Core.pure
 

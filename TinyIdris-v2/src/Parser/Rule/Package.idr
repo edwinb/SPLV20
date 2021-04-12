@@ -34,7 +34,7 @@ export
 exactProperty : String -> Rule String
 exactProperty p = terminal ("Expected property " ++ p)
                            (\x => case tok x of
-                                       DotSepIdent [p'] =>
+                                       DotSepIdent (p' ::: []) =>
                                          if p == p' then Just p
                                          else Nothing
                                        _ => Nothing)
@@ -64,7 +64,7 @@ export
 packageName : Rule String
 packageName = terminal "Expected package name"
                        (\x => case tok x of
-                                   DotSepIdent [str] =>
+                                   DotSepIdent (str ::: []) =>
                                      if isIdent AllowDashes str then Just str
                                      else Nothing
                                    _ => Nothing)

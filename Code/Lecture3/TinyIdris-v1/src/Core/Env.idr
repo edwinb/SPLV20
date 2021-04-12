@@ -13,7 +13,7 @@ revOnto xs [] = Refl
 revOnto xs (v :: vs)
     = rewrite revOnto (v :: xs) vs in
         rewrite appendAssociative (reverse vs) [v] xs in
-				  rewrite revOnto [v] vs in Refl
+          rewrite revOnto [v] vs in Refl
 
 revNs : (vs, ns : List a) -> reverse ns ++ reverse vs = reverse (vs ++ ns)
 revNs [] ns = rewrite appendNilRightNeutral (reverse ns) in Refl

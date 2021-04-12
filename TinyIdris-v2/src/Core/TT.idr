@@ -131,7 +131,7 @@ data Term : List Name -> Type where
      Erased : Term vars
 
 public export
-interface Weaken (tm : List Name -> Type) where
+interface Weaken (0 tm : List Name -> Type) where
   weaken : {n, vars : _} -> tm vars -> tm (n :: vars)
   weakenNs : {vars : _} -> (ns : List Name) -> tm vars -> tm (ns ++ vars)
 
@@ -458,7 +458,7 @@ nameAt : {vars : _} ->
 nameAt {vars = n :: ns} Z First = n
 nameAt {vars = n :: ns} (S k) (Later p) = nameAt k p
 
-export 
+export
 {vars : _} -> Show (Term vars) where
   show tm = let (fn, args) = getFnArgs tm in showApp fn args
     where

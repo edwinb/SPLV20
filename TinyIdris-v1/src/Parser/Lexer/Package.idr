@@ -27,7 +27,7 @@ Show Token where
   show (Comment str) = "Comment: " ++ str
   show EndOfInput = "EndOfInput"
   show Equals = "Equals"
-  show (DotSepIdent dsid) = "DotSepIdentifier: " ++ dotSep (List1.toList dsid)
+  show (DotSepIdent dsid) = "DotSepIdentifier: " ++ dotSep (forget dsid)
   show Separator = "Separator"
   show Space = "Space"
   show (StringLit s) = "StringLit: " ++ s

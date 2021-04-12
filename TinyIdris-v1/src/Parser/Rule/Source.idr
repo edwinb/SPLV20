@@ -124,7 +124,7 @@ namespacedIdent
     = terminal "Expected namespaced name"
         (\x => case tok x of
             DotSepIdent ns => Just ns
-            Ident i => Just [i]
+            Ident i => Just (i ::: [])
             _ => Nothing)
 
 export
@@ -133,7 +133,7 @@ moduleIdent
     = terminal "Expected module identifier"
         (\x => case tok x of
             DotSepIdent ns => Just ns
-            Ident i => Just [i]
+            Ident i => Just (i ::: [])
             _ => Nothing)
 
 export

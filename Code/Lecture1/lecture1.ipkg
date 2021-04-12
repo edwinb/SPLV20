@@ -1,3 +1,14 @@
 package lecture1
 
 opts = "-p contrib"
+
+modules
+ = Ref
+ , Search
+ , QTT
+ , WarmupExercise.Ex2
+ , WarmupExercise.Ex1
+ , WarmupExercise.Ex3
+ , RLE
+ , Append
+ , Core.Core

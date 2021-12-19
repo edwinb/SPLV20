@@ -6,7 +6,7 @@ import public Text.Parser
 
 import Data.List
 import Data.List1
-import Data.Strings
+import Data.String
 import Data.String.Extra
 import Utils.String
 
@@ -50,7 +50,7 @@ rawTokens =
   ]
   where
     splitNamespace : String -> List1 String
-    splitNamespace = Data.Strings.split (== '.')
+    splitNamespace = Data.String.split (== '.')
 
 export
 lex : String -> Either (Int, Int, String) (List (TokenData Token))

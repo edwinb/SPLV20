@@ -10,7 +10,7 @@ import Core.Value
 
 import Data.LengthMatch
 import Data.List
-import Data.Strings
+import Data.String
 
 import Decidable.Equality
 

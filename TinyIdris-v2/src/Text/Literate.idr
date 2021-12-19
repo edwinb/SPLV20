@@ -25,10 +25,9 @@ module Text.Literate
 
 import Text.Lexer
 
-import Data.List1
 import Data.List
 import Data.List.Views
-import Data.Strings
+import Data.String
 
 %default total
 
@@ -64,12 +63,12 @@ rawTokens delims ls =
 
 ||| Merge the tokens into a single source file.
 reduce : List (TokenData Token) -> List String -> String
-reduce [] acc = fastAppend (reverse acc)
+reduce [] acc = concat (reverse acc)
 reduce (MkToken _ _ _ _ (Any x) :: rest) acc = reduce rest (blank_content::acc)
   where
     -- Preserve the original document's line count.
     blank_content : String
-    blank_content = fastAppend (replicate (length (forget $ lines x)) "\n")
+    blank_content = concat (replicate (length (lines x)) "\n")
 
 reduce (MkToken _ _ _ _ (CodeLine m src) :: rest) acc =
     if m == trim src
@@ -80,9 +79,10 @@ reduce (MkToken _ _ _ _ (CodeLine m src) :: rest) acc =
                       )::acc)
 
 reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc with (lines src) -- Strip the deliminators surrounding the block.
-  reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc | (s ::: ys) with (snocList ys)
-    reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc | (s ::: []) | Empty = reduce rest acc -- 2
-    reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc | (s ::: (srcs ++ [f])) | (Snoc f srcs rec) =
+  reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc | [] = reduce rest acc -- 1
+  reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc | (s :: ys) with (snocList ys)
+    reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc | (s :: []) | Empty = reduce rest acc -- 2
+    reduce (MkToken _ _ _ _ (CodeBlock l r src) :: rest) acc | (s :: (srcs ++ [f])) | (Snoc f srcs rec) =
         reduce rest ("\n" :: unlines srcs :: acc)
 
 -- [ NOTE ] 1 & 2 shouldn't happen as code blocks are well formed i.e. have two deliminators.

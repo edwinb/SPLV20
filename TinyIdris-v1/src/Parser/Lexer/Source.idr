@@ -4,7 +4,7 @@ import public Parser.Lexer.Common
 
 import Data.List1
 import Data.List
-import Data.Strings
+import Data.String
 import Data.String.Extra
 
 import Utils.Hex

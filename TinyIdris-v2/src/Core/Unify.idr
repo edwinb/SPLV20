@@ -208,7 +208,7 @@ instantiate {newvars} env mname mdef locs tm
          defs <- get Ctxt
          rhs <- mkDef locs INil tm ty
 
-         let newdef = record { definition = PMDef [] (STerm rhs) } mdef
+         let newdef = { definition := PMDef [] (STerm rhs) } mdef
          addDef mname newdef
          removeHole mname
   where
@@ -403,15 +403,15 @@ retryGuess n
                            let csAll = unionAll cs'
                            case constraints csAll of
                                 [] => -- fine now, complete the definition
-                                      do let gdef = record {
-                                                      definition = PMDef [] (STerm tm)
+                                      do let gdef = {
+                                                      definition := PMDef [] (STerm tm)
                                                     } gdef
                                          updateDef n (const gdef)
                                          pure True
                                 cs => -- still constraints, but might be new
                                       -- ones, so update the definition
-                                      do let gdef = record {
-                                                      definition = Guess tm cs
+                                      do let gdef = {
+                                                      definition := Guess tm cs
                                                     } gdef
                                          updateDef n (const gdef)
                                          pure False

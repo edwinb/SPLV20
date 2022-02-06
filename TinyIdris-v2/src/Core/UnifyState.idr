@@ -49,7 +49,7 @@ resetNextVar : {auto u : Ref UST UState} ->
                Core ()
 resetNextVar
     = do ust <- get UST
-         put UST (record { nextName = 0 } ust)
+         put UST ({ nextName := 0 } ust)
 
 -- Generate a global name based on the given root, in the current namespace
 export
@@ -57,27 +57,27 @@ genName : {auto u : Ref UST UState} ->
           String -> Core Name
 genName str
     = do ust <- get UST
-         put UST (record { nextName $= (+1) } ust)
+         put UST ({ nextName $= (+1) } ust)
          pure (MN str (nextName ust))
 
 addHoleName : {auto u : Ref UST UState} ->
               Name -> Core ()
 addHoleName n
     = do ust <- get UST
-         put UST (record { holes $= insert n } ust)
+         put UST ({ holes $= insert n } ust)
 
 addGuessName : {auto u : Ref UST UState} ->
                Name -> Core ()
 addGuessName n
     = do ust <- get UST
-         put UST (record { guesses $= insert n  } ust)
+         put UST ({ guesses $= insert n  } ust)
 
 export
 removeHole : {auto u : Ref UST UState} ->
              Name -> Core ()
 removeHole n
     = do ust <- get UST
-         put UST (record { holes $= delete n } ust)
+         put UST ({ holes $= delete n } ust)
 
 export
 addConstraint : {auto u : Ref UST UState} ->
@@ -85,8 +85,8 @@ addConstraint : {auto u : Ref UST UState} ->
 addConstraint constr
     = do ust <- get UST
          let cid = nextConstraint ust
-         put UST (record { constraints $= insert cid constr,
-                           nextConstraint = cid+1 } ust)
+         put UST ({ constraints $= insert cid constr,
+                           nextConstraint := cid+1 } ust)
          pure cid
 
 export
@@ -94,7 +94,7 @@ deleteConstraint : {auto u : Ref UST UState} ->
                 Int -> Core ()
 deleteConstraint cid
     = do ust <- get UST
-         put UST (record { constraints $= delete cid } ust)
+         put UST ({ constraints $= delete cid } ust)
 
 -- Make a type which abstracts over an environment
 -- Don't include 'let' bindings, since they have a concrete value and

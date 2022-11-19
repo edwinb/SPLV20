@@ -10,7 +10,7 @@ import public Text.Parser
 import        Data.List
 import        Data.List.Views
 import        Data.List1
-import        Data.Strings
+import        Data.String
 
 import Debug.Trace
 
@@ -31,6 +31,8 @@ collectDefs : List ImpDecl -> List ImpDecl
 
 %default covering
 
+%hide Prelude.(>>)
+%hide Core.Core.(>>)
 %hide Prelude.(>>=)
 %hide Core.Core.(>>=)
 %hide Prelude.pure

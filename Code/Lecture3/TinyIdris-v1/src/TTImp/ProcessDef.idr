@@ -50,5 +50,5 @@ processDef n clauses
          (args ** tree) <- getPMDef n (type gdef) chkcs
 
          -- Update the definition with the compiled tree
-         updateDef n (record { definition = PMDef args tree })
+         updateDef n ({ definition := PMDef args tree })
          coreLift $ putStrLn $ "Processed " ++ show n

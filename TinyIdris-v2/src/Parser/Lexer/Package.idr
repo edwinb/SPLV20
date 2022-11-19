@@ -6,7 +6,7 @@ import public Text.Parser
 
 import Data.List
 import Data.List1
-import Data.Strings
+import Data.String
 import Data.String.Extra
 import Utils.String
 
@@ -27,7 +27,7 @@ Show Token where
   show (Comment str) = "Comment: " ++ str
   show EndOfInput = "EndOfInput"
   show Equals = "Equals"
-  show (DotSepIdent dsid) = "DotSepIdentifier: " ++ dotSep (List1.toList dsid)
+  show (DotSepIdent dsid) = "DotSepIdentifier: " ++ dotSep (forget dsid)
   show Separator = "Separator"
   show Space = "Space"
   show (StringLit s) = "StringLit: " ++ s
@@ -50,7 +50,7 @@ rawTokens =
   ]
   where
     splitNamespace : String -> List1 String
-    splitNamespace = Data.Strings.split (== '.')
+    splitNamespace = Data.String.split (== '.')
 
 export
 lex : String -> Either (Int, Int, String) (List (TokenData Token))

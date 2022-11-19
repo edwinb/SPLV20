@@ -21,7 +21,7 @@ record UnifyResult where
   holesSolved : Bool -- did we solve any holes on the way?
 
 public export
-interface Unify (tm : List Name -> Type) where
+interface Unify (0 tm : List Name -> Type) where
   unify : {vars : _} ->
           {auto c : Ref Ctxt Defs} ->
           {auto u : Ref UST UState} ->
@@ -208,7 +208,7 @@ instantiate {newvars} env mname mdef locs tm
          defs <- get Ctxt
          rhs <- mkDef locs INil tm ty
 
-         let newdef = record { definition = PMDef [] (STerm rhs) } mdef
+         let newdef = { definition := PMDef [] (STerm rhs) } mdef
          addDef mname newdef
          removeHole mname
   where
@@ -304,7 +304,7 @@ mutual
                        empty <- clearDefs defs
                        tm <- quote empty env tmnf
                        case shrinkTerm tm submv of
-                            Nothing => 
+                            Nothing =>
                               -- Not well scoped, but it might be if we
                               -- normalise (TODO: Exercise)
                               postpone env (NApp (NMeta n margs) fargs) tmnf
@@ -396,22 +396,22 @@ retryGuess n
     = do defs <- get Ctxt
          case !(lookupDef n defs) of
               Nothing => pure False
-              Just gdef => 
+              Just gdef =>
                 case definition gdef of
                      Guess tm cs =>
                         do cs' <- traverse retry cs
                            let csAll = unionAll cs'
                            case constraints csAll of
                                 [] => -- fine now, complete the definition
-                                      do let gdef = record {
-                                                      definition = PMDef [] (STerm tm)
+                                      do let gdef = {
+                                                      definition := PMDef [] (STerm tm)
                                                     } gdef
                                          updateDef n (const gdef)
                                          pure True
                                 cs => -- still constraints, but might be new
                                       -- ones, so update the definition
-                                      do let gdef = record {
-                                                      definition = Guess tm cs
+                                      do let gdef = {
+                                                      definition := Guess tm cs
                                                     } gdef
                                          updateDef n (const gdef)
                                          pure False

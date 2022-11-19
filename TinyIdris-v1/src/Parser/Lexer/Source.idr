@@ -4,7 +4,7 @@ import public Parser.Lexer.Common
 
 import Data.List1
 import Data.List
-import Data.Strings
+import Data.String
 import Data.String.Extra
 
 import Utils.Hex
@@ -46,7 +46,7 @@ Show Token where
   -- Identifiers
   show (HoleIdent x) = "hole identifier " ++ x
   show (Ident x) = "identifier " ++ x
-  show (DotSepIdent xs) = "namespaced identifier " ++ dotSep (List1.toList $ reverse xs)
+  show (DotSepIdent xs) = "namespaced identifier " ++ dotSep (forget $ reverse xs)
   show (DotIdent x) = "dot+identifier " ++ x
   show (Symbol x) = "symbol " ++ x
   -- Comments
@@ -222,7 +222,7 @@ rawTokens =
                    else Ident x
     parseNamespace : String -> Token
     parseNamespace ns = case List1.reverse . split (== '.') $ ns of
-                             [ident] => parseIdent ident
+                             (ident ::: []) => parseIdent ident
                              ns      => DotSepIdent ns
 
 export

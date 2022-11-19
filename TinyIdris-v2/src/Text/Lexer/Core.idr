@@ -5,7 +5,7 @@ import Data.Bool.Extra
 import Data.List
 import Data.Maybe
 import Data.Nat
-import Data.Strings
+import Data.String
 
 %default total
 

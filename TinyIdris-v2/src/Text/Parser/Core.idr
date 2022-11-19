@@ -24,12 +24,20 @@ data Grammar : (tok : Type) -> (consumes : Bool) -> Type -> Type where
      Commit : Grammar tok False ()
      MustWork : Grammar tok c a -> Grammar tok c a
 
-     SeqEat : {c2 : Bool} ->
+     BindEat : {c2 : Bool} ->
               Grammar tok True a -> Inf (a -> Grammar tok c2 b) ->
               Grammar tok True b
-     SeqEmpty : {c1, c2 : Bool} ->
+     BindEmpty : {c1, c2 : Bool} ->
                 Grammar tok c1 a -> (a -> Grammar tok c2 b) ->
                 Grammar tok (c1 || c2) b
+
+     SeqEat : {c2 : Bool} ->
+              Grammar tok True a -> Inf (Grammar tok c2 b) ->
+              Grammar tok True b
+     SeqEmpty : {c1, c2 : Bool} ->
+                Grammar tok c1 a -> Grammar tok c2 b ->
+                Grammar tok (c1 || c2) b
+
      Alt : {c1, c2 : Bool} ->
            Grammar tok c1 ty -> Lazy (Grammar tok c2 ty) ->
            Grammar tok (c1 && c2) ty
@@ -43,8 +51,20 @@ export %inline
         Grammar tok c1 a ->
         inf c1 (a -> Grammar tok c2 b) ->
         Grammar tok (c1 || c2) b
-(>>=) {c1 = False} = SeqEmpty
-(>>=) {c1 = True}  = SeqEat
+(>>=) {c1 = False} = BindEmpty
+(>>=) {c1 = True}  = BindEat
+
+||| Sequence two grammars. If either consumes some input, the sequence is
+||| guaranteed to consume some input. If the first one consumes input, the
+||| second is allowed to be recursive (because it means some input has been
+||| consumed and therefore the input is smaller)
+export %inline
+(>>) : {c1, c2 : Bool} ->
+       Grammar tok c1 a ->
+       inf c1 (Grammar tok c2 b) ->
+       Grammar tok (c1 || c2) b
+(>>) {c1 = False} = SeqEmpty
+(>>) {c1 = True}  = SeqEat
 
 ||| Sequence two grammars. If either consumes some input, the sequence is
 ||| guaranteed to consume input. This is an explicitly non-infinite version
@@ -54,20 +74,20 @@ seq : {c1,c2 : Bool} ->
       Grammar tok c1 a ->
       (a -> Grammar tok c2 b) ->
       Grammar tok (c1 || c2) b
-seq = SeqEmpty
+seq = BindEmpty
 
 ||| Sequence a grammar followed by the grammar it returns.
 export %inline
 join : {c1,c2 : Bool} ->
        Grammar tok c1 (Grammar tok c2 a) ->
        Grammar tok (c1 || c2) a
-join {c1 = False} p = SeqEmpty p id
-join {c1 = True} p = SeqEat p id
+join {c1 = False} p = BindEmpty p id
+join {c1 = True} p = BindEat p id
 
 ||| Give two alternative grammars. If both consume, the combination is
 ||| guaranteed to consume.
 export %inline
-(<|>) : {c1,c2 : Bool} -> 
+(<|>) : {c1,c2 : Bool} ->
         Grammar tok c1 ty ->
         Lazy (Grammar tok c2 ty) ->
         Grammar tok (c1 && c2) ty
@@ -82,13 +102,17 @@ Functor (Grammar tok c) where
   map f (MustWork g) = MustWork (map f g)
   map f (Terminal msg g) = Terminal msg (\t => map f (g t))
   map f (Alt x y)    = Alt (map f x) (map f y)
+  map f (BindEat act next)
+      = BindEat act (\val => map f (next val))
+  map f (BindEmpty act next)
+      = BindEmpty act (\val => map f (next val))
   map f (SeqEat act next)
-      = SeqEat act (\val => map f (next val))
+      = SeqEat act (map f next)
   map f (SeqEmpty act next)
-      = SeqEmpty act (\val => map f (next val))
+      = SeqEmpty act (map f next)
   -- The remaining constructors (NextIs, EOF, Commit) have a fixed type,
   -- so a sequence must be used.
-  map {c = False} f p = SeqEmpty p (Empty . f)
+  map {c = False} f p = BindEmpty p (Empty . f)
 
 ||| Sequence a grammar with value type `a -> b` and a grammar
 ||| with value type `a`. If both succeed, apply the function
@@ -99,7 +123,7 @@ export %inline
         Grammar tok c1 (a -> b) ->
         Grammar tok c2 a ->
         Grammar tok (c1 || c2) b
-(<*>) x y = SeqEmpty x (\f => map f y)
+(<*>) x y = BindEmpty x (\f => map f y)
 
 ||| Sequence two grammars. If both succeed, use the value of the first one.
 ||| Guaranteed to consume if either grammar consumes.
@@ -125,13 +149,19 @@ export
 mapToken : (a -> b) -> Grammar b c ty -> Grammar a c ty
 mapToken f (Empty val) = Empty val
 mapToken f (Terminal msg g) = Terminal msg (g . f)
-mapToken f (NextIs msg g) = SeqEmpty (NextIs msg (g . f)) (Empty . f)
+mapToken f (NextIs msg g) = BindEmpty (NextIs msg (g . f)) (Empty . f)
 mapToken f EOF = EOF
 mapToken f (Fail fatal msg) = Fail fatal msg
 mapToken f (MustWork g) = MustWork (mapToken f g)
 mapToken f Commit = Commit
-mapToken f (SeqEat act next) = SeqEat (mapToken f act) (\x => mapToken f (next x))
-mapToken f (SeqEmpty act next) = SeqEmpty (mapToken f act) (\x => mapToken f (next x))
+mapToken f (BindEat act next)
+  = BindEat (mapToken f act) (\x => mapToken f (next x))
+mapToken f (BindEmpty act next)
+  = BindEmpty (mapToken f act) (\x => mapToken f (next x))
+mapToken f (SeqEat act next)
+  = SeqEat (mapToken f act) (mapToken f next)
+mapToken f (SeqEmpty act next)
+  = SeqEmpty (mapToken f act) (mapToken f next)
 mapToken f (Alt x y) = Alt (mapToken f x) (mapToken f y)
 
 ||| Always succeed with the given value.
@@ -187,9 +217,9 @@ data ParseResult : Type -> Type -> Type where
            (val : ty) -> (more : List tok) -> ParseResult tok ty
 
 mutual
-  doParse : (commit : Bool) -> 
+  doParse : (commit : Bool) ->
             (act : Grammar tok c ty) ->
-            (xs : List tok) -> 
+            (xs : List tok) ->
             ParseResult tok ty
   doParse com (Empty val) xs = Res com val xs
   doParse com (Fail fatal str) [] = Failure com fatal str []
@@ -223,18 +253,32 @@ mutual
                      else assert_total (doParse False y xs)
 -- Successfully parsed the first option, so use the outer commit flag
              Res _ val xs => Res com val xs
-  doParse com (SeqEmpty act next) xs
+  doParse com (BindEmpty act next) xs
       = case assert_total (doParse com act xs) of
              Failure com fatal msg ts => Failure com fatal msg ts
              Res com val xs =>
                    case assert_total (doParse com (next val) xs) of
                         Failure com' fatal msg ts => Failure com' fatal msg ts
                         Res com' val xs => Res com' val xs
-  doParse com (SeqEat act next) xs
+  doParse com (BindEat act next) xs
       = case assert_total (doParse com act xs) of
              Failure com fatal msg ts => Failure com fatal msg ts
              Res com val xs =>
                    case assert_total (doParse com (next val) xs) of
+                        Failure com' fatal msg ts => Failure com' fatal msg ts
+                        Res com' val xs => Res com' val xs
+  doParse com (SeqEmpty act next) xs
+      = case assert_total (doParse com act xs) of
+             Failure com fatal msg ts => Failure com fatal msg ts
+             Res com val xs =>
+                   case assert_total (doParse com next xs) of
+                        Failure com' fatal msg ts => Failure com' fatal msg ts
+                        Res com' val xs => Res com' val xs
+  doParse com (SeqEat act next) xs
+      = case assert_total (doParse com act xs) of
+             Failure com fatal msg ts => Failure com fatal msg ts
+             Res com val xs =>
+                   case assert_total (doParse com next xs) of
                         Failure com' fatal msg ts => Failure com' fatal msg ts
                         Res com' val xs => Res com' val xs
 

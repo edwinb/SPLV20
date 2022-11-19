@@ -152,9 +152,9 @@ nameAt : {vars : _} ->
 nameAt {vars = n :: ns} Z First = n
 nameAt {vars = n :: ns} (S k) (Later p) = nameAt k p
 
-export 
+export
 {vars : _} -> Show (Term vars) where
-  show tm = let (fn, args) = getFnArgs tm in showApp fn args
+  show tm = let (fn, args) = getFnArgs tm in assert_total $ showApp fn args
     where
       showApp : {vars : _} -> Term vars -> List (Term vars) -> String
       showApp (Local {name} idx p) []

@@ -3,7 +3,7 @@ Today's exercises:
 * Complete the missing definitions in Core.TT
 
 These might take you a while (they took me a while at first...) and there
-is no need to complete them before the rest of the lectures. I stuggest
+is no need to complete them before the rest of the lectures. I suggest
 you at least try to make some progress on one of them to get a feel for how
 Term manipulation works, and look at the TinyIdris definitions if you get
 stuck.

@@ -27,7 +27,7 @@ import Text.Lexer
 
 import Data.List
 import Data.List.Views
-import Data.Strings
+import Data.String
 
 %default total
 
@@ -63,12 +63,12 @@ rawTokens delims ls =
 
 ||| Merge the tokens into a single source file.
 reduce : List (TokenData Token) -> List String -> String
-reduce [] acc = fastAppend (reverse acc)
+reduce [] acc = concat (reverse acc)
 reduce (MkToken _ _ _ _ (Any x) :: rest) acc = reduce rest (blank_content::acc)
   where
     -- Preserve the original document's line count.
     blank_content : String
-    blank_content = fastAppend (replicate (length (lines x)) "\n")
+    blank_content = concat (replicate (length (lines x)) "\n")
 
 reduce (MkToken _ _ _ _ (CodeLine m src) :: rest) acc =
     if m == trim src

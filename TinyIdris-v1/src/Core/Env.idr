@@ -8,7 +8,7 @@ data Env : (tm : List Name -> Type) -> List Name -> Type where
      Nil : Env tm []
      (::) : Binder (tm vars) -> Env tm vars -> Env tm (x :: vars)
 
-revOnto : (xs, vs : _) -> reverseOnto xs vs = reverse vs ++ xs
+revOnto : (xs, vs : List a) -> reverseOnto xs vs = reverse vs ++ xs
 revOnto xs [] = Refl
 revOnto xs (v :: vs)
     = rewrite revOnto (v :: xs) vs in
